@@ -49,6 +49,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="Skip schedule gate")
     parser.add_argument("--dry-run", action="store_true", help="Print email, don't send")
+    parser.add_argument("--no-history", action="store_true", help="Send email but don't update history (for test runs)")
     args = parser.parse_args()
 
     if not args.force and not is_on_week():
@@ -66,7 +67,8 @@ def main() -> None:
         return
 
     send_email(subject, body)
-    save_history(history)
+    if not args.no_history:
+        save_history(history)
 
 
 if __name__ == "__main__":

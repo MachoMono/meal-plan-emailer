@@ -9,6 +9,10 @@ on:
         description: "Run regardless of even/odd week"
         type: boolean
         default: false
+      no_history:
+        description: "Test run — send email but don't update theme history"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -32,11 +36,10 @@ jobs:
           RESEND_FROM_ADDRESS: ${{ secrets.RESEND_FROM_ADDRESS }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         run: |
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            python src/main.py --force
-          else
-            python src/main.py
-          fi
+          ARGS=""
+          [ "${{ github.event.inputs.force }}" = "true" ] && ARGS="$ARGS --force"
+          [ "${{ github.event.inputs.no_history }}" = "true" ] && ARGS="$ARGS --no-history"
+          python src/main.py $ARGS
 
       - name: Commit history.json if updated
         run: |
